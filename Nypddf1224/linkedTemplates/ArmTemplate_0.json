@@ -1,0 +1,856 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Nypddf1224"
+		},
+		"Storage to Data Flow_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'Storage to Data Flow'"
+		},
+		"TOSILVER_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'TOSILVER'"
+		},
+		"tostaging_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'tostaging'"
+		},
+		"Storage to Data Flow_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://nypdsstorageaccount.dfs.core.windows.net/"
+		},
+		"tostaging_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "NYPD_ARREST_DB"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/Storage to Data Flow')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('Storage to Data Flow_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('Storage to Data Flow_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TOSILVER')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('TOSILVER_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tostaging')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SnowflakeV2",
+				"typeProperties": {
+					"authenticationType": "Basic",
+					"accountIdentifier": "vra44033.east-us-2.azure",
+					"user": "TEMP_USER",
+					"database": "[parameters('tostaging_properties_typeProperties_database')]",
+					"warehouse": "NYPD_WH",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('tostaging_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/INPUT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Storage to Data Flow",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "CLEANED_DATA_NYPD.csv",
+						"fileSystem": "bronze"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ARREST_KEY",
+						"type": "String"
+					},
+					{
+						"name": "ARREST_DATE",
+						"type": "String"
+					},
+					{
+						"name": "PD_CD",
+						"type": "String"
+					},
+					{
+						"name": "PD_DESC",
+						"type": "String"
+					},
+					{
+						"name": "KY_CD",
+						"type": "String"
+					},
+					{
+						"name": "OFNS_DESC",
+						"type": "String"
+					},
+					{
+						"name": "LAW_CODE",
+						"type": "String"
+					},
+					{
+						"name": "LAW_CAT_CD",
+						"type": "String"
+					},
+					{
+						"name": "ARREST_BORO",
+						"type": "String"
+					},
+					{
+						"name": "ARREST_PRECINCT",
+						"type": "String"
+					},
+					{
+						"name": "JURISDICTION_CODE",
+						"type": "String"
+					},
+					{
+						"name": "AGE_GROUP",
+						"type": "String"
+					},
+					{
+						"name": "PERP_SEX",
+						"type": "String"
+					},
+					{
+						"name": "PERP_RACE",
+						"type": "String"
+					},
+					{
+						"name": "X_COORD_CD",
+						"type": "String"
+					},
+					{
+						"name": "Y_COORD_CD",
+						"type": "String"
+					},
+					{
+						"name": "Latitude",
+						"type": "String"
+					},
+					{
+						"name": "Longitude",
+						"type": "String"
+					},
+					{
+						"name": "New Georeferenced Column",
+						"type": "String"
+					},
+					{
+						"name": "Row_has_nulls",
+						"type": "String"
+					},
+					{
+						"name": "STANDARD_DATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Storage to Data Flow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/NYPD_CSV')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Storage to Data Flow",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "CLEANED_DATA_NYPD.csv",
+						"fileSystem": "bronze"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ARREST_KEY",
+						"type": "String"
+					},
+					{
+						"name": "ARREST_DATE",
+						"type": "String"
+					},
+					{
+						"name": "PD_CD",
+						"type": "String"
+					},
+					{
+						"name": "PD_DESC",
+						"type": "String"
+					},
+					{
+						"name": "KY_CD",
+						"type": "String"
+					},
+					{
+						"name": "OFNS_DESC",
+						"type": "String"
+					},
+					{
+						"name": "LAW_CODE",
+						"type": "String"
+					},
+					{
+						"name": "LAW_CAT_CD",
+						"type": "String"
+					},
+					{
+						"name": "ARREST_BORO",
+						"type": "String"
+					},
+					{
+						"name": "ARREST_PRECINCT",
+						"type": "String"
+					},
+					{
+						"name": "JURISDICTION_CODE",
+						"type": "String"
+					},
+					{
+						"name": "AGE_GROUP",
+						"type": "String"
+					},
+					{
+						"name": "PERP_SEX",
+						"type": "String"
+					},
+					{
+						"name": "PERP_RACE",
+						"type": "String"
+					},
+					{
+						"name": "X_COORD_CD",
+						"type": "String"
+					},
+					{
+						"name": "Y_COORD_CD",
+						"type": "String"
+					},
+					{
+						"name": "Latitude",
+						"type": "String"
+					},
+					{
+						"name": "Longitude",
+						"type": "String"
+					},
+					{
+						"name": "New Georeferenced Column",
+						"type": "String"
+					},
+					{
+						"name": "Row_has_nulls",
+						"type": "String"
+					},
+					{
+						"name": "STANDARD_DATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Storage to Data Flow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/NYPDcsv')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Storage to Data Flow",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "CLEANED_DATA_NYPD.csv",
+						"fileSystem": "bronze"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "ARREST_KEY",
+						"type": "String"
+					},
+					{
+						"name": "ARREST_DATE",
+						"type": "String"
+					},
+					{
+						"name": "PD_CD",
+						"type": "String"
+					},
+					{
+						"name": "PD_DESC",
+						"type": "String"
+					},
+					{
+						"name": "KY_CD",
+						"type": "String"
+					},
+					{
+						"name": "OFNS_DESC",
+						"type": "String"
+					},
+					{
+						"name": "LAW_CODE",
+						"type": "String"
+					},
+					{
+						"name": "LAW_CAT_CD",
+						"type": "String"
+					},
+					{
+						"name": "ARREST_BORO",
+						"type": "String"
+					},
+					{
+						"name": "ARREST_PRECINCT",
+						"type": "String"
+					},
+					{
+						"name": "JURISDICTION_CODE",
+						"type": "String"
+					},
+					{
+						"name": "AGE_GROUP",
+						"type": "String"
+					},
+					{
+						"name": "PERP_SEX",
+						"type": "String"
+					},
+					{
+						"name": "PERP_RACE",
+						"type": "String"
+					},
+					{
+						"name": "X_COORD_CD",
+						"type": "String"
+					},
+					{
+						"name": "Y_COORD_CD",
+						"type": "String"
+					},
+					{
+						"name": "Latitude",
+						"type": "String"
+					},
+					{
+						"name": "Longitude",
+						"type": "String"
+					},
+					{
+						"name": "New Georeferenced Column",
+						"type": "String"
+					},
+					{
+						"name": "Row_has_nulls",
+						"type": "String"
+					},
+					{
+						"name": "STANDARD_DATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Storage to Data Flow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TOSILVER')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Storage to Data Flow",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "silver"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Storage to Data Flow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sILVER')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "TOSILVER",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/TOSILVER')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tostaginglayer')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "tostaging",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SnowflakeV2Table",
+				"schema": [
+					{
+						"name": "ARREST_KEY",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "ARREST_DATE",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "PD_CD",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "PD_DESC",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "KY_CD",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "OFNS_DESC",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "LAW_CODE",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "LAW_CAT_CD",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "ARREST_BORO",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "ARREST_PRECINCT",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "JURISDICTION_CODE",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "AGE_GROUP",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "PERP_SEX",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "PERP_RACE",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "X_COORD_CD",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "Y_COORD_CD",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "LATITUDE",
+						"type": "FLOAT"
+					},
+					{
+						"name": "LONGITUDE",
+						"type": "FLOAT"
+					},
+					{
+						"name": "NEW_GEO_COLUMNS",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "ROW_HAS_NULLS",
+						"type": "VARCHAR"
+					},
+					{
+						"name": "STANDARD_DATE",
+						"type": "VARCHAR"
+					}
+				],
+				"typeProperties": {
+					"schema": "NYSCHEMA",
+					"table": "STAGING_NYPD_ARRESTS"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/tostaging')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/NYPD_DataFlow')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "NYPDcsv",
+								"type": "DatasetReference"
+							},
+							"name": "Nypdcsv"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "tostaginglayer",
+								"type": "DatasetReference"
+							},
+							"name": "Tosink123",
+							"rejectedDataLinkedService": {
+								"referenceName": "Storage to Data Flow",
+								"type": "LinkedServiceReference"
+							}
+						}
+					],
+					"transformations": [
+						{
+							"name": "select1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          ARREST_KEY as integer,",
+						"          ARREST_DATE as string,",
+						"          PD_CD as string,",
+						"          PD_DESC as string,",
+						"          KY_CD as string,",
+						"          OFNS_DESC as string,",
+						"          LAW_CODE as string,",
+						"          LAW_CAT_CD as string,",
+						"          ARREST_BORO as string,",
+						"          ARREST_PRECINCT as integer,",
+						"          JURISDICTION_CODE as short,",
+						"          AGE_GROUP as string,",
+						"          PERP_SEX as string,",
+						"          PERP_RACE as string,",
+						"          X_COORD_CD as string,",
+						"          Y_COORD_CD as string,",
+						"          Latitude as float,",
+						"          Longitude as float,",
+						"          {New Georeferenced Column} as string,",
+						"          Row_has_nulls as string,",
+						"          STANDARD_DATE as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> Nypdcsv",
+						"Nypdcsv select(mapColumn(",
+						"          ARREST_KEY,",
+						"          ARREST_DATE,",
+						"          PD_CD,",
+						"          PD_DESC,",
+						"          KY_CD,",
+						"          OFNS_DESC,",
+						"          LAW_CODE,",
+						"          LAW_CAT_CD,",
+						"          ARREST_BORO,",
+						"          ARREST_PRECINCT,",
+						"          JURISDICTION_CODE,",
+						"          AGE_GROUP,",
+						"          PERP_SEX,",
+						"          PERP_RACE,",
+						"          X_COORD_CD,",
+						"          Y_COORD_CD,",
+						"          LATITUDE = Latitude,",
+						"          LONGITUDE = Longitude,",
+						"          NEW_GEO_COLUMN = {New Georeferenced Column},",
+						"          ROW_HAS_NULLS = Row_has_nulls,",
+						"          STANDARD_DATE",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"Nypdcsv sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          ARREST_KEY as string,",
+						"          ARREST_DATE as string,",
+						"          PD_CD as string,",
+						"          PD_DESC as string,",
+						"          KY_CD as string,",
+						"          OFNS_DESC as string,",
+						"          LAW_CODE as string,",
+						"          LAW_CAT_CD as string,",
+						"          ARREST_BORO as string,",
+						"          ARREST_PRECINCT as string,",
+						"          JURISDICTION_CODE as string,",
+						"          AGE_GROUP as string,",
+						"          PERP_SEX as string,",
+						"          PERP_RACE as string,",
+						"          X_COORD_CD as string,",
+						"          Y_COORD_CD as string,",
+						"          LATITUDE as string,",
+						"          LONGITUDE as string,",
+						"          NEW_GEO_COLUMNS as string,",
+						"          ROW_HAS_NULLS as string,",
+						"          STANDARD_DATE as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     stageInsert: true,",
+						"     mapColumn(",
+						"          ARREST_KEY,",
+						"          ARREST_DATE,",
+						"          PD_CD,",
+						"          PD_DESC,",
+						"          KY_CD,",
+						"          OFNS_DESC,",
+						"          LAW_CODE,",
+						"          LAW_CAT_CD,",
+						"          ARREST_BORO,",
+						"          ARREST_PRECINCT,",
+						"          JURISDICTION_CODE,",
+						"          AGE_GROUP,",
+						"          PERP_SEX,",
+						"          PERP_RACE,",
+						"          X_COORD_CD,",
+						"          Y_COORD_CD,",
+						"          LATITUDE = Latitude,",
+						"          LONGITUDE = Longitude,",
+						"          NEW_GEO_COLUMNS = {New Georeferenced Column},",
+						"          ROW_HAS_NULLS = Row_has_nulls,",
+						"          STANDARD_DATE",
+						"     )) ~> Tosink123"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/NYPDcsv')]",
+				"[concat(variables('factoryId'), '/datasets/tostaginglayer')]",
+				"[concat(variables('factoryId'), '/linkedServices/Storage to Data Flow')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "To Staging",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "DataCleansing",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "NYPD_DataFlow",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"Nypdcsv": {},
+									"Tosink123": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "DataCleansing",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "INPUT",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "TOSILVER",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2025-02-14T03:47:15Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/NYPD_DataFlow')]",
+				"[concat(variables('factoryId'), '/datasets/INPUT')]",
+				"[concat(variables('factoryId'), '/datasets/TOSILVER')]"
+			]
+		}
+	]
+}
