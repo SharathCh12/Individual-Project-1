@@ -1,0 +1,9 @@
+{
+	"name": "Nypddf1224",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "f286af5b-fbb0-4e68-868e-545edeb2a423",
+		"tenantId": "a8eec281-aaa3-4dae-ac9b-9a398b9215e7"
+	}
+}

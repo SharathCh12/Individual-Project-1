@@ -1,0 +1,106 @@
+{
+	"name": "tostaginglayer",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "tostaging",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SnowflakeV2Table",
+		"schema": [
+			{
+				"name": "ARREST_KEY",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "ARREST_DATE",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "PD_CD",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "PD_DESC",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "KY_CD",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "OFNS_DESC",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "LAW_CODE",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "LAW_CAT_CD",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "ARREST_BORO",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "ARREST_PRECINCT",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "JURISDICTION_CODE",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "AGE_GROUP",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "PERP_SEX",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "PERP_RACE",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "X_COORD_CD",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "Y_COORD_CD",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "LATITUDE",
+				"type": "FLOAT"
+			},
+			{
+				"name": "LONGITUDE",
+				"type": "FLOAT"
+			},
+			{
+				"name": "NEW_GEO_COLUMNS",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "ROW_HAS_NULLS",
+				"type": "VARCHAR"
+			},
+			{
+				"name": "STANDARD_DATE",
+				"type": "VARCHAR"
+			}
+		],
+		"typeProperties": {
+			"schema": "NYSCHEMA",
+			"table": "STAGING_NYPD_ARRESTS"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
