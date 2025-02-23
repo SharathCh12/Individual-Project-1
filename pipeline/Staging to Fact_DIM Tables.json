@@ -1,0 +1,93 @@
+{
+	"name": "Staging to Fact_DIM Tables",
+	"properties": {
+		"activities": [
+			{
+				"name": "To DIM_Crime",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SnowflakeV2Source",
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
+						}
+					},
+					"sink": {
+						"type": "SnowflakeV2Sink",
+						"importSettings": {
+							"type": "SnowflakeImportCopyCommand"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "PD_CD",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PD_CD",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "KY_CD",
+									"type": "String"
+								},
+								"sink": {
+									"name": "KY_CD",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "PD_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PD_DESC",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "OFNS_DESC",
+									"type": "String"
+								},
+								"sink": {
+									"name": "OFNS_DESC",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "tostaginglayer",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "tostaginglayer",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}
