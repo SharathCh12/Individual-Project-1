@@ -98,8 +98,8 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "NYSCHEMA",
-			"table": "STAGING_NYPD_ARRESTS"
+			"schema": "NYPD_ARREST_SCHEMA",
+			"table": "DIM_CRIME"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
