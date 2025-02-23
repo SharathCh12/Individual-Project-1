@@ -22,9 +22,14 @@
 						}
 					},
 					"sink": {
-						"type": "SnowflakeV2Sink",
-						"importSettings": {
-							"type": "SnowflakeImportCopyCommand"
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
 						}
 					},
 					"enableStaging": false,
@@ -82,7 +87,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "tostaginglayer",
+						"referenceName": "sILVER",
 						"type": "DatasetReference"
 					}
 				]
