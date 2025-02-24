@@ -1,0 +1,107 @@
+{
+	"name": "To_DIM",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "tostaginglayer",
+						"type": "DatasetReference"
+					},
+					"name": "Stagetoadf"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "tostaginglayer",
+						"type": "DatasetReference"
+					},
+					"name": "sinktodimcrime"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          ARREST_KEY as decimal(38,0),",
+				"          ARREST_DATE as string,",
+				"          PD_CD as string,",
+				"          PD_DESC as string,",
+				"          KY_CD as string,",
+				"          OFNS_DESC as string,",
+				"          LAW_CODE as string,",
+				"          LAW_CAT_CD as string,",
+				"          ARREST_BORO as string,",
+				"          ARREST_PRECINCT as decimal(38,0),",
+				"          JURISDICTION_CODE as string,",
+				"          AGE_GROUP as string,",
+				"          PERP_SEX as string,",
+				"          PERP_RACE as string,",
+				"          X_COORD_CD as string,",
+				"          Y_COORD_CD as string,",
+				"          LATITUDE as double,",
+				"          LONGITUDE as double,",
+				"          NEW_GEO_COLUMNS as string,",
+				"          ROW_HAS_NULLS as string,",
+				"          STANDARD_DATE as string,",
+				"          ARREST_DATE2 as date",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'table') ~> Stagetoadf",
+				"Stagetoadf select(mapColumn(",
+				"          PD_CD,",
+				"          PD_DESC,",
+				"          KY_CD,",
+				"          OFNS_DESC",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ARREST_KEY as string,",
+				"          ARREST_DATE as string,",
+				"          PD_CD as string,",
+				"          PD_DESC as string,",
+				"          KY_CD as string,",
+				"          OFNS_DESC as string,",
+				"          LAW_CODE as string,",
+				"          LAW_CAT_CD as string,",
+				"          ARREST_BORO as string,",
+				"          ARREST_PRECINCT as string,",
+				"          JURISDICTION_CODE as string,",
+				"          AGE_GROUP as string,",
+				"          PERP_SEX as string,",
+				"          PERP_RACE as string,",
+				"          X_COORD_CD as string,",
+				"          Y_COORD_CD as string,",
+				"          LATITUDE as string,",
+				"          LONGITUDE as string,",
+				"          NEW_GEO_COLUMNS as string,",
+				"          ROW_HAS_NULLS as string,",
+				"          STANDARD_DATE as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          PD_CD,",
+				"          PD_DESC,",
+				"          KY_CD,",
+				"          OFNS_DESC",
+				"     )) ~> sinktodimcrime"
+			]
+		}
+	}
+}
