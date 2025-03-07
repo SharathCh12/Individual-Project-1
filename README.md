@@ -20,10 +20,15 @@ This project analyzes crime patterns in New York City using the **NYPD Crime Dat
 ## Data Flow 🚀
 
 1️⃣ Scrape Data → Extracted from the NYPD Official Arrest Data
+
 2️⃣ Data Profiling → Used Alteryx to analyze and clean data
+
 3️⃣ Staging Layer → Loaded into Snowflake for preprocessing
+
 4️⃣ Data Modeling → Designed a dimensional model to answer business questions
+
 5️⃣ Data Loading → Transformed and loaded into the dimensional model
+
 6️⃣ Visualization → Created an interactive Power BI dashboard
 
 ## Dashboard Preview
