@@ -23,7 +23,8 @@ This project analyzes crime patterns in New York City using the **NYPD Crime Dat
 ┣ 📂 SQL # Database schema & queries
 ┣ 📂 Alteryx # Alteryx workflows (.yxmd, .yxdb)
 ┣ 📂 PowerBI # Power BI Dashboard (.pbix)
-┣ 📜 README.md # Project documentation
-┗ 📜 crime_analysis.ipynb # Optional Python analysis notebook
+
+## Dashboard Preview
+
 
 https://github.com/SharathCh12/Individual-Project-1/blob/main/Screenshot%202025-03-06%20at%208.04.09%E2%80%AFPM.png
