@@ -26,3 +26,4 @@ This project analyzes crime patterns in New York City using the **NYPD Crime Dat
 ┣ 📜 README.md # Project documentation
 ┗ 📜 crime_analysis.ipynb # Optional Python analysis notebook
 
+Screenshot 2025-03-06 at 8.04.09 PM.png
