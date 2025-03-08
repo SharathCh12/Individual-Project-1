@@ -17,12 +17,21 @@ This project analyzes crime patterns in New York City using the **NYPD Crime Dat
 ✅ Seasonal & hourly crime patterns  
 ✅ Law enforcement resource allocation insights  
 
-## 📂 Project Structure  
-📁 NYPD-Crime-Analysis
-┣ 📂 Data # Raw and cleaned datasets
-┣ 📂 SQL # Database schema & queries
-┣ 📂 Alteryx # Alteryx workflows (.yxmd, .yxdb)
-┣ 📂 PowerBI # Power BI Dashboard (.pbix)
-┣ 📜 README.md # Project documentation
-┗ 📜 crime_analysis.ipynb # Optional Python analysis notebook
+## Data Flow 🚀
 
+1️⃣ Scrape Data → Extracted from the NYPD Official Arrest Data
+
+2️⃣ Data Profiling → Used Alteryx to analyze and clean data
+
+3️⃣ Staging Layer → Loaded into Snowflake for preprocessing
+
+4️⃣ Data Modeling → Designed a dimensional model to answer business questions
+
+5️⃣ Data Loading → Transformed and loaded into the dimensional model
+
+6️⃣ Visualization → Created an interactive Power BI dashboard
+
+## Dashboard Preview
+
+
+https://github.com/SharathCh12/Individual-Project-1/blob/main/Screenshot%202025-03-06%20at%208.04.09%E2%80%AFPM.png
